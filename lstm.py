@@ -5,6 +5,11 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
+def softmax(w, t = 1.0):
+    e = np.exp(np.array(w) / t)
+    dist = e / np.sum(e)
+    return dist
+
 word_dim = 5
 hidden_dim = 2
 #bptt_truncate = bptt_truncate
@@ -16,10 +21,8 @@ U_fo = np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), (hidden_di
 U_ou = np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), (hidden_dim, word_dim))
 U_g = np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), (hidden_dim, word_dim))
 
-
-#V_in = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (word_dim, hidden_dim))
-#V_fo = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (word_dim, hidden_dim))
-#V_ou = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (word_dim, hidden_dim))
+#for softmax
+V = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (word_dim, hidden_dim))
 
 W_in = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (hidden_dim, hidden_dim))
 W_fo = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (hidden_dim, hidden_dim))
@@ -28,37 +31,57 @@ W_g = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (hidden
 
 
 x=np.array([[0,0,0,0,1],[1,0,0,0,0],[0,0,1,0,0]])
-o=np.array([[0,0,0,0,0],[1,0,0,0,0],[0,0,1,0,0]])
-
-h=np.array([[0,0],[0,0],[0,0]])
+y=np.array([[0,0,0,0,0],[1,0,0,0,0],[0,0,1,0,0]])
+#TODO dynamic definitions
+s=np.array([[0,0],[0,0],[0,0]])
+c=np.array([0, 0])
 
 print "weight U: ", U_in
 print "weight W: ", W_in
 print "---------------init done-------------"
-for i in range(len(x)):
+for iter1 in range(len(x)):
+    if iter1 == 0:
+	sprev=np.array([0,0])
+    else:
+        sprev=s[iter1-1]
+    
     #--------
     print "input layer calculation"
-    print "input: ", x[i], " "
+    print "input: ", x[iter1], " "
 
-    print "np.dot(U_in, x[i])  ", np.dot(U_in, x[i])
-    print " np.dot(W_in, h[i]) ",  np.dot(W_in, h[i]) 
-    inpu = sigmoid( np.dot(U_in, x[i]) + np.dot(W_in, h[i]) )
     print "-------"
-    print i
+    print iter1
     print "---------------------------------------"
 
-    forget = sigmoid( np.dot(U_fo, x[i]) + np.dot(W_fo, h[i]) )
-    out = sigmoid( np.dot(U_ou, x[i]) + np.dot(W_ou, h[i]) )
-    g=np.tanh(  np.dot(U_g, x[i]) + np.dot(W_g, h[i]) ) #wait, but why?
-    
-    if i == 0:
-	hi=np.array([0,0,0,0,0])
-    else:
-        hi=o[i-1]
-    
-    o[i]=hi*forget + g*inpu #How come, that dimensions do not match?????????
-    h[i]=np.tanh(o[i])*out
+    print "-- i --"
+    i = sigmoid( np.dot(U_in, x[iter1]) + np.dot(W_in, sprev) )
+    print i
+
+    print "-- f --"
+    f = sigmoid( np.dot(U_fo, x[iter1]) + np.dot(W_fo, sprev) )
+    print f
+
+    print "-- o --"
+    o = sigmoid( np.dot(U_ou, x[iter1]) + np.dot(W_ou, sprev) )
+    print o
+
+    print "-- g --"
+    g=np.tanh(  np.dot(U_g, x[iter1]) + np.dot(W_g, sprev) ) #wait, but why?
+    print g
+ 
+    print "-- c --"
+    c=c*f + g*i #How come, that dimensions do not match?????????
+    print c
+
+    print "-- s NOW --"
+    s[iter1]=np.tanh(c)*o
+    print s[iter1]
+
+    print "-- y aka. output NOW --"
+    print "debug"
+    print np.dot(V,s[iter1])
+    y[iter1]=softmax(np.dot(V,s[iter1]))
+    print y
 
 print  " -------------- iteration ended ------------------"
-print "hiddens: ", h
-print "outputs: ", o
+
