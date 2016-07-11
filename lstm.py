@@ -36,52 +36,52 @@ y=np.array([[0,0,0,0,0],[1,0,0,0,0],[0,0,1,0,0]])
 s=np.array([[0,0],[0,0],[0,0]])
 c=np.array([0, 0])
 
-print "weight U: ", U_in
-print "weight W: ", W_in
-print "---------------init done-------------"
+print("weight U: ", U_in)
+print("weight W: ", W_in)
+print("---------------init done-------------")
 for iter1 in range(len(x)):
     if iter1 == 0:
-	sprev=np.array([0,0])
+        sprev=np.array([0,0])
     else:
         sprev=s[iter1-1]
     
     #--------
-    print "input layer calculation"
-    print "input: ", x[iter1], " "
+    print("input layer calculation")
+    print("input: ", x[iter1], " ")
 
-    print "-------"
-    print iter1
-    print "---------------------------------------"
+    print("-------")
+    print(iter1)
+    print("---------------------------------------")
 
-    print "-- i --"
+    print("-- i --")
     i = sigmoid( np.dot(U_in, x[iter1]) + np.dot(W_in, sprev) )
-    print i
+    print(i)
 
-    print "-- f --"
+    print("-- f --")
     f = sigmoid( np.dot(U_fo, x[iter1]) + np.dot(W_fo, sprev) )
-    print f
+    print(f)
 
-    print "-- o --"
+    print("-- o --")
     o = sigmoid( np.dot(U_ou, x[iter1]) + np.dot(W_ou, sprev) )
-    print o
+    print(o)
 
-    print "-- g --"
+    print("-- g --")
     g=np.tanh(  np.dot(U_g, x[iter1]) + np.dot(W_g, sprev) ) #wait, but why?
-    print g
+    print(g)
  
-    print "-- c --"
+    print("-- c --")
     c=c*f + g*i #How come, that dimensions do not match?????????
-    print c
+    print(c)
 
-    print "-- s NOW --"
+    print("-- s NOW --")
     s[iter1]=np.tanh(c)*o
-    print s[iter1]
+    print(s[iter1])
 
-    print "-- y aka. output NOW --"
-    print "debug"
-    print np.dot(V,s[iter1])
+    print("-- y aka. output NOW --")
+    print("debug")
+    print(np.dot(V,s[iter1]))
     y[iter1]=softmax(np.dot(V,s[iter1]))
-    print y
+    print(y)
 
-print  " -------------- iteration ended ------------------"
+print(" -------------- iteration ended ------------------")
 
