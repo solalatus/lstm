@@ -6,8 +6,12 @@ def sigmoid(x):
 
 
 def softmax(w, t = 1.0):
+    print("----Inside Softmax----")
     e = np.exp(np.array(w) / t)
+    print(e)
     dist = e / np.sum(e)
+    print(dist)
+    print("--- Exit Softmax ---")
     return dist
 
 word_dim = 5
@@ -32,6 +36,7 @@ W_g = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (hidden
 
 x=np.array([[0,0,0,0,1],[1,0,0,0,0],[0,0,1,0,0]])
 y=np.array([[0,0,0,0,0],[1,0,0,0,0],[0,0,1,0,0]])
+y_hat=[]
 #TODO dynamic definitions
 s=np.array([[0,0],[0,0],[0,0]])
 c=np.array([0, 0])
@@ -79,9 +84,10 @@ for iter1 in range(len(x)):
 
     print("-- y aka. output NOW --")
     print("debug")
-    print(np.dot(V,s[iter1]))
-    y[iter1]=softmax(np.dot(V,s[iter1]))
-    print(y)
+    lstm_output=np.dot(V,s[iter1])
+    print(lstm_output)
+    y_hat.append(softmax(lstm_output))
+    print(y_hat[iter1])
 
 print(" -------------- iteration ended ------------------")
 
