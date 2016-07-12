@@ -37,20 +37,13 @@ W_g = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (hidden
 x=np.array([[0,0,0,0,1],[1,0,0,0,0],[0,0,1,0,0]])
 y=np.array([[0,0,0,0,0],[1,0,0,0,0],[0,0,1,0,0]])
 y_hat=[]
-#TODO dynamic definitions
-s=np.array([[0,0],[0,0],[0,0]])
-c=np.array([0, 0])
+s=np.zeros(hidden_dim)
+c=np.zeros(hidden_dim)
 
 print("weight U: ", U_in)
 print("weight W: ", W_in)
 print("---------------init done-------------")
 for iter1 in range(len(x)):
-    if iter1 == 0:
-        sprev=np.array([0,0])
-    else:
-        sprev=s[iter1-1]
-    
-    #--------
     print("input layer calculation")
     print("input: ", x[iter1], " ")
 
@@ -59,19 +52,19 @@ for iter1 in range(len(x)):
     print("---------------------------------------")
 
     print("-- i --")
-    i = sigmoid( np.dot(U_in, x[iter1]) + np.dot(W_in, sprev) )
+    i = sigmoid( np.dot(U_in, x[iter1]) + np.dot(W_in, s) )
     print(i)
 
     print("-- f --")
-    f = sigmoid( np.dot(U_fo, x[iter1]) + np.dot(W_fo, sprev) )
+    f = sigmoid( np.dot(U_fo, x[iter1]) + np.dot(W_fo, s) )
     print(f)
 
     print("-- o --")
-    o = sigmoid( np.dot(U_ou, x[iter1]) + np.dot(W_ou, sprev) )
+    o = sigmoid( np.dot(U_ou, x[iter1]) + np.dot(W_ou, s) )
     print(o)
 
     print("-- g --")
-    g=np.tanh(  np.dot(U_g, x[iter1]) + np.dot(W_g, sprev) ) #wait, but why?
+    g=np.tanh(  np.dot(U_g, x[iter1]) + np.dot(W_g, s) ) #wait, but why?
     print(g)
  
     print("-- c --")
@@ -79,12 +72,12 @@ for iter1 in range(len(x)):
     print(c)
 
     print("-- s NOW --")
-    s[iter1]=np.tanh(c)*o
-    print(s[iter1])
+    s=np.tanh(c)*o
+    print(s)
 
     print("-- y aka. output NOW --")
     print("debug")
-    lstm_output=np.dot(V,s[iter1])
+    lstm_output=np.dot(V,s)
     print(lstm_output)
     y_hat.append(softmax(lstm_output))
     print(y_hat[iter1])
